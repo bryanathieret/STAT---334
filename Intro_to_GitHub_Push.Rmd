@@ -1,0 +1,16 @@
+---
+title: "Intro to GitHub"
+author: "Bryana A. S. Thieret"
+date: "2024-01-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+```
+
