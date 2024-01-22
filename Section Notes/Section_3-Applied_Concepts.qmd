@@ -1,0 +1,68 @@
+---
+title: "Section 3: Applied Concepts"
+format:
+  html:
+    embed-resources: true
+    echo: false
+    warning: false
+    message: false
+documentclass: article
+author: "Bryana A. S. Thieret"
+mainfont: "Cambria"
+monofont: "Cambria"
+---
+
+
+
+_--------------------------------------------------------------------------------------------------------_  
+
+## 3.1: More Data Visualization Concepts (Class Prep)  
+
+
+* Read Sections 1.3 - 1.7 of Kearen Healy’s Data Visualization: A Practical Introduction. As you read, answer the following questions in just 1 to 2 sentences.  
+
+1. What is the difference between a colour’s hue and a colour’s intensity?  
+  * A color's "hue" is the actual "color" (e.g., blue, purple, yellow, green, etc.,) and a color's intensity could be thought of as how "light" or "dark" the color is.  
+
+2. Think of an example where you would want to use a sequential colour scale that’s different from the one given in the text. Then, think of examples where you would use a diverging colour scale and an unordered colour scale.  
+  * For simplicity, lets say I have a group of rats that were tested on the same schedule of reinforcement (lets use a Fixed Ratio Schedule of reinforcement where 1 lever press would be required to receive 1 pellet reinforcer  ~ "FR1") and the number of lever presses (i.e., work) increases by 1 every 3 days. If I wanted to show this data, by rat, I could use a sequential color scale where every 3 days the color would change by the same brightness/luminescence.  
+  * Another example would be if I had similar data but instead of increasing the requirement to receive a reinforcer lets say the schedule of reinforcement changes completed from and FR5 (i.e., five lever press = one reinforcer) to a VI5 (i.e., on average every 5 seconds after 1 lever press = one reinforcer) we could use a diverging color scale to signify the change in schedule of reinforcement because these schedules of reinforcement are different in terms of one being a fixed and the other being a varied but also because one is based on the amount work required and the other is based on time which result in completely different behavioral responses.  
+
+3. Some gestalt inferences take priority over others. Using Figure 1.21, give an example of a gestalt inference that takes priority over another one.  
+  * In the top left there appear to be groupings of circles and I would assume that circles in those specific groups are similar in someway that is not similar across the different groups of circles. Interestingly to the top right the same is shown but the middle row of circles for all groups are shaded blue which makes me think that even though those groups are different, those specific circles share something more across groups compared to how they are grouped originally.  
+
+4. “Bar charts are better than Pie charts for visualizing a single categorical variable.” Explain how results shown in Figure 1.23 support this claim.  
+  * Crowdsourced results show that there are many more errors made when people are trying to interpret a pie chart compared to bar charts for single-categorical variables.  
+
+5. Suppose you have a scatterplot of height on the y-axis vs. weight on the x-axis for people born in Canada, Mexico, and the United States. You now want to explore whether the relationship is different for people born in the United States, people born in Canada, and people born in Mexico. Should you use different shapes to distinguish the three countries or should you use different colours? Explain using either Figure 1.24 or 1.25.  
+  * Since people can differentiate between colors much easier, especially in scatterplots with lots of points, different colors should be used instead of different shapes grouped by country.  
+
+6. When might you use the left-side of Figure 1.27 to show the law school data? When might you use the right-side of Figure 1.27 to show the law school data?  
+  * The left graph would be used to explore the the recent trend change while the right would be used to display the overall relativity of this trend change in enrollment in law school from a global view and not local view.  
+
+7. Summary: What are two takeaways from Sections 1.3-1.7?  
+  (a) Every aspect of how a person chooses to present their data should be thought about through the lens of how we as humans perceive (whether consciously or unconsciously) data.  
+  (b) We want to think about what sorts of relationships are inferred and under what circumstances while making and judging the graph.  
+
+8. What is one question that you have about the reading?  
+  * How do you make an unbiased graph when we are all naturally biased unconsciously?  
+
+
+_--------------------------------------------------------------------------------------------------------_   
+
+## 3.2: Examples  
+
+
+
+
+
+_--------------------------------------------------------------------------------------------------------_   
+
+## 3.3: Your Turn  
+
+
+
+
+
+
+

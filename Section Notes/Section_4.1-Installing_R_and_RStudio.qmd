@@ -1,0 +1,58 @@
+---
+title: "Section 4.1: Installing R and RStudio"
+author: "Bryana A.S. Thieret"
+format: 
+  html:
+    embed-resources: true
+---
+
+## a. What is your name and what is your class year (first-year, sophomore, junior, senior)?  
+
+* My name is Bryana Thieret and I am a senior!  
+
+## b. What is/are your major(s) and minor(s), either actual or intended?  
+
+* My majors are Psychology and Statistics.  
+
+## c. Why did you decide to take this course?  
+
+* I am taking this course because I love everything about graphs! I love making them and I think it is vital to properly display data in order to communicate something to your audience that would be extremely difficult to do in words. As a psychology major that will be going into a PhD program for Behavior Analysis after graduating, it is essential for me to learn everything I can to use in my future to be able to display data and I think it is not emphasized/utilized enough in the field I am going to go into.  
+
+## d. In what semester and year did you take STAT/DATA 234? STAT 213?  
+
+* I took STAT 234 last semester with you and took STAT 213 in the Fall of my sophomore year. I did also take STAT 313 last semester though.  
+
+## e. Have you taken CS 140?  
+
+* I took CS 140 in the Spring of my Junior year.  
+
+
+## f. Have you used Git before? If so, in what context?  
+
+* I have used Git before but just in STAT 313 with Ramler where we were just pulling. We did not do anything besides pulling so I understand the concept and how it works but that is it.  
+
+## g. Before this course, did you use R Studio on your desktop?  
+
+* Of course! I have been using exclusively RStudio since the Fall of my sophomore year and consider myself a pro at this point.  
+
+## h. What is your hometown: city, state, country?  
+
+* I grew up in Woodbine Maryland (near Mt.Airy if you know Maryland), but my mother bought her first house after my first-year of college and we moved to Glen Burnie Maryland (about 10 minutes outside of Baltimore).  
+
+## i. Do you play a sport on campus? If so, what sport? If not, what is an activity that you do on or off-campus?  
+
+* I enjoy dancing. I did acrobatic gymnastics for 10 years (7 - 17 in age) and was on the national team for the United States and competed internationally, so dancing has been a nice activity that is not too hard on my body here at SLU. I often perform in the Spring/Fall dance concerts.  
+
+## j. What is your favorite TV show or movie or band/musical artist?  
+
+* Breaking Bad or Better Call Saul
+
+## k. Tell me something about yourself.  
+
+* A few weeks ago I got accepted into my first fully funded PhD Behavior Analysis program! It's unlikely I will be going into this specific program, but it is still exciting! I am currently doing a lot of interviews and will be in Utah next Friday for an in-person interview where all of my expenses from the trip have/will be reimbursed!  
+
+## l. What are your expectations for this class and/or what do you hope to gain from this class?  
+
+* I am hoping to expand my repertoire to pull from when creating graphs and visual representations of data. It is kind of sad to think about it this way, but this is my last course (besides by STAT SYE) to really expand my knowledge using RStudio :( . I am sadly finding that most of the PhD graduate programs for Behavior Analysis do not use RStudio, but the ones I am most interested in going into would LOVE to use RStudio so it looks like I will end up teaching those under my graduate mentor RStudio which I am so excited and happy to do because I love RStudio so much! I feel pretty comfortable teaching others how to use RStudio because I have had so many great professors and different ways/perspectives it has been taught to me over the years, but I just want to prepare myself as best as I can transfer those skills to those in the lab I end up going into. I want to make beautiful graphics that best communicates the data and the takeaway from the data!    
+
+
