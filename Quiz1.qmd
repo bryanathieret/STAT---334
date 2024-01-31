@@ -1,0 +1,47 @@
+---
+title: "Coding quiz"
+format: 
+  html:
+    embed-resources: true
+---
+
+“All work presented is my own, and I have followed all rules for collaboration. I have not used any AI for this assignment.”  
+**Bryana A.S. Thieret**  
+
+
+
+```{r}
+library(tidyverse)
+diamonds
+```
+
+
+# 1.  
+
+
+```{r}
+diamonds |> ggplot(aes(x = price)) +
+  geom_histogram(color = "hotpink", fill = "pink") +
+  facet_wrap(~cut)
+```
+
+
+# 2.  
+
+```{r}
+diamonds |> ggplot(aes(x = price)) +
+  geom_histogram(color = "hotpink", fill = "pink") +
+  facet_wrap(~cut) + 
+  theme(
+    axis.line = element_line(color = "black", linewidth = 1),
+    strip.background = element_rect(fill = "white")
+  )
+```
+
+# 3.  
+
+
+
+
+
+
