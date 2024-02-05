@@ -1,0 +1,101 @@
+---
+title: "Section 7: Expressing Variability/Uncertainty"
+format:
+  html:
+    embed-resources: true
+    warning: false
+    message: false
+documentclass: article
+author: "Bryana A. S. Thieret"
+mainfont: "Cambria"
+monofont: "Cambria"
+---
+
+
+## 7.1: Are Bar Plots Bad?  
+
+* In some contexts, bar plots are very bad. In general, when they are used to represent summary statistics from continuous variables, they can obscure a lot of the underlying data's relevant features, including the distribution shape and the sample size. But perhaps most importantly, they obscure any variability in the data.  
+
+
+```{r}
+library(tidyverse)
+theme_set(theme_minimal())
+
+library(here)
+library(readr)
+pokemon_full = read_csv("data/pokemon_full.csv")
+pokemon_height <- pokemon_full |> 
+  filter(Type %in% c("Bug", "Electric", "Fighting", "Flying",
+                     "Grass", "Steel")) |>
+  group_by(Type) |>
+  summarise(avg_height = mean(height)) |>
+  mutate(Type = fct_reorder(Type, avg_height))
+
+ggplot(data = pokemon_height, aes(x = Type, y = avg_height)) +
+  geom_col() +
+  coord_flip()
+```
+
+**Exercise 1:** Exercise 1. What can’t we see from this graphic that would be useful?  
+* You can't see the amount of variability within each column or the sample size.  
+
+**Exercise 2:** Make a different plot that shows more relevant features about the distribution of the height variable in each Pokemon type.  
+
+```{r}
+ggplot(data = pokemon_full, aes(x = Type, y = height)) +
+  geom_violin() +
+  coord_flip()
+```
+
+
+```{r}
+## install.packages("openintro")
+library(openintro)
+data(mlb_players_18)
+mlb_sum <- mlb_players_18 |> group_by(position) |>
+  summarise(med_hr = median(HR)) |>
+  mutate(position = fct_reorder(position, med_hr))
+ggplot(data = mlb_sum, aes(x = position, y = med_hr)) +
+  geom_col() +
+  coord_flip()
+```
+
+
+**Exercise 3:** “Fix” the previous plot to show the underlying variability in the number of homeruns for each player position by making a set of boxplots.
+
+```{r}
+mlb_players_18 |> 
+  ggplot(aes(x = position, y = HR)) + 
+  geom_jitter(shape = 21, width = 0.15) +
+  geom_col(data = mlb_sum, aes(x = position, y = med_hr), fill = NA, color = "black") + 
+  coord_flip()
+
+```
+
+**Exercise 4:** Consider a news channel covering a developing hurricane. Which of these types of graphs would better help the general public with the potential variability of the hurricane’s path?  
+* option 1 because it shows each of the different predicting paths instead of a blob of area which is harder for me to follow quickly especially with the needed key.  
+
+
+
+**Exercise 5:** Next, consider fivethirtyeight.com’s coverage of the 2020 presidential election. Much of their forecast given on this page can be simply summarised by saying they predict Biden to win the election with 89% probability. So, why make the supplementary graphics that say the same thing but use a lot more space?  
+* These graphs display the different ways each candidate could and are most likely to win the presidential election which shows the possible variations which include Trump winning in 3 of them. Instead of just telling someone the probability it displays the probability which for many people is much easier to grasp compared to a number (also gives more information compared to just the number).  
+
+_-----------------------------------------------------------------------------------_   
+
+## 7.2: STAT 113 Survey  
+
+
+
+
+
+_-----------------------------------------------------------------------------------_   
+
+## 7.3: Your Turn  
+
+
+
+
+
+
+
+

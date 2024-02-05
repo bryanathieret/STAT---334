@@ -61,6 +61,24 @@ _-------------------------------------------------------------------------------
 ## 3.3: Your Turn  
 
 
+**Exercise 3:** We can also specialize the plot’s theme. There are a ton of options with the theme() function to really specialise your plot.
+
+Consider the coloured scatterplot of the Happy Planet Index data:
+
+```{r}
+ggplot(data = hpi_df, aes(x = Footprint, y = Wellbeing, colour = Region)) +
+  geom_point(size = 0.5, alpha = 0.5) +
+  theme(
+    axis.text = element_text(color = "red", family = "Courier", size = 5),
+    axis.title = element_text(color = "red", family = "Courier", size = 5),
+    legend.text = element_text(color = "green", family = "Courier", size = 4),
+    legend.title = element_text(color = "red", family = "Courier", size = 3),
+    plot.background = element_rect(fill = "red3"),
+    axis.line = element_line(arrow = arrow())
+    
+  )
+```
+
 
 
 

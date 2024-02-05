@@ -1,0 +1,116 @@
+---
+title: "Section 6: Mapping Data"
+format:
+  html:
+    embed-resources: true
+    echo: false
+    warning: false
+    message: false
+documentclass: article
+author: "Bryana A. S. Thieret"
+mainfont: "Cambria"
+monofont: "Cambria"
+---
+
+## 6.1: Mapping Introduction  
+
+### 6.1.1: Do We Need a Map?  
+
+See $\rightarrow$ **Section 7.5 of the data visualization textbook**  
+
+### 6.1.2: Mapping Common Areas  
+* In order to create a map of some area, we need to in some way tell R how to draw the boundaries for that area.  
+
+
+```{r}
+library(maps)
+library(tidyverse)
+state_df <- ggplot2::map_data("state")
+```
+
+* To have R draw the map, we just need a new `geom`: `geom_polygon()` and a group `aes()` to tell R how to draw the boundaries:  
+
+```{r}
+ggplot(data = state_df,
+            mapping = aes(x = long, y = lat,
+                          group = group)) +
+  geom_polygon() 
+
+ggplot(data = state_df,
+            mapping = aes(x = long, y = lat,
+                          group = group)) +
+  geom_polygon(colour = "black", fill = "white") +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_void()
+```
+
+* Now that we've created a base map, we probably want to add a variable to fill by to examine patterns across the states. The resulting map is sometimes called a "choropleth" map.   
+
+
+```{r}
+library(usdata)
+state_stats <- state_stats |> mutate(state = str_to_lower(state))
+state_full <- left_join(state_df, state_stats, by = c("region" = "state"))
+
+ggplot(data = state_full, aes(x = long, y = lat, group = group)) +
+  geom_polygon(colour = "black", aes(fill = coal)) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_void() +
+  scale_fill_viridis_b()
+```
+
+**Exercise 1:** The reading gave one example where the “best” graph to show would not be a map. Think of a second example where, even though the data is spatial, the best graph to make a particular argument would not be a map.  
+
+* A very specific example is the amount of money schools allocate per student by state. This would be problematic and wrong because school funding is not by state but rather through income taxes which means whatever the value is that is shown is an average.   
+
+
+**Exercise 2:** Refer back the United States examples that we completed. Choose a variable or two variables where a map makes the most sense to visualize that variable and explain your reasoning. Then, choose a variable or two variables where you might make a plot other than a map and explain your reasoning for why the map makes less sense for this variable.
+
+* I think the variable `homeownership` would be a good variable to visualize on the map because its a percentage which is easy to view on a map (i.e., not too many color variations) whereas variables like `murder` or `robbery` (given that I don't have much context) don't appear to be adjusted to population size. In addition, it might not be very accurate to group these variables by state and rather should be grouped by county.  
+
+**Exercise 3:** Which states had the fastest growth rate between 2000 and 2010? Make a variable for the percent change in population and then map this variable.  
+
+```{r}
+rate = state_full |> mutate(Rate = pop2000/pop2010)
+
+ggplot(data = rate, aes(x = long, y = lat, group = group)) +
+  geom_polygon(colour = "black", aes(fill = Rate)) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_void() +
+  scale_fill_viridis_b()
+```
+
+
+**Exercise 4:** To your map in Exercise 1, think about which type of colour scale makes the most sense to use (sequential, diverging, or unordered). Change the colour scale to match what makes the most sense.  
+
+* I think sequential makes the most sense in this case with the values that we have especially because none of them are above 1.  
+
+```{r}
+ggplot(data = rate, aes(x = long, y = lat, group = group)) +
+  geom_polygon(colour = "black", aes(fill = Rate)) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_void() +
+  scale_fill_viridis_b()
+```
+
+
+You may have noticed a couple of additional problems in the United States maps we made in the previous section.  
+
+1. We ignored Alaska and Hawaii. Putting these on the map in their geographic locations would result in a tiny continental United States map that would be harder to read.  
+
+2. Some states in the Northeast are so small that their fill values are hard to read.  
+
+Both of these issues can be challenging to address. It is common to put Hawaii and Alaska in a corner of the plot, even though their latitude and longitude values do not match. Sometimes Alaska is made to be smaller than its true size as well. The smaller Northeastern states is a more challenging problem. This is beyond the time we have to devote to maps in this course, but a hexbin map can help with both of these issues.
+
+_-------------------------------------------------------------------------------------_
+
+## 6.2: Mapping Other Areas: `sf` Objects   
+
+
+
+_-------------------------------------------------------------------------------------_
+
+## 6.3: Your Turn  
+
+
+

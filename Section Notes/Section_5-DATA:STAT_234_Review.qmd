@@ -1,0 +1,206 @@
+---
+title: "Section 5: DATA/STAT 234 Review"
+format:
+  html:
+    embed-resources: true
+    echo: false
+    warning: false
+    message: false
+documentclass: article
+author: "Bryana A. S. Thieret"
+mainfont: "Cambria"
+monofont: "Cambria"
+---
+
+
+```{r}
+library(tidyverse)
+library(here)
+library(ggrepel)
+library(readr)
+theme_set(theme_classic())
+hpi_df <- read_csv(here("Section Notes/data/hpi-tidy.csv"))
+```
+
+_-------------------------------------------------------------------------------_  
+
+## 5.1: Review with HPI Data (Class Prep)  
+### 5.1.1: Making a Scatterplot and Labeling Points  
+
+* In making visualizations, we sometimes want to either highlight, by using a unique color, size, or shape, a specific observation or we might want to label a specific observation.  
+
+```{r}
+# new data that only has the united states
+hpi_us <- hpi_df |> filter(Country == "United States of America")
+
+hpi_df |> ggplot(aes(x = Footprint, y = Wellbeing)) + 
+  geom_point() +
+  geom_text(data = hpi_us, aes(label = Country))
+
+hpi_df |> ggplot(aes(x = Footprint, y = Wellbeing)) +
+  geom_point() +
+  geom_text_repel(data = hpi_us, aes(label = Country)) +
+  geom_point(data = hpi_us, size = 3, shape = 1)
+
+```
+
+
+### 5.1.2: Themes and Labels  
+
+```{r}
+hpi_df |> ggplot(aes(x = Footprint, y = Wellbeing)) +
+  geom_point() +
+  geom_text_repel(data = hpi_us, aes(label = Country)) +
+  geom_point(data = hpi_us, size = 3, shape = 1) +
+  labs(title = "Countries with a Higher Ecological Footprint Tend to Have Citizens with Higher Wellbeing", ## add title
+    subtitle = "Wellbeing is on a 1-10 scale", ## add subtitle (smaller text size than the title)
+    caption = "Data Source: http://happyplanetindex.org/countries", ## add caption to the bottom of the figure
+    x = "Ecological Footprint", ## change x axis label
+    y = "Wellbeing") ## change y axis label
+```
+
+
+
+_-------------------------------------------------------------------------------_  
+
+**Exercise 1**: For each of the core dplyr functions mutate(), arrange(), select(), slice(), filter(), group_by(), and summarise(), write a one sentence summary of the overall purpose of the function.  
+* `mutate()` : adds a new completely new column to the far right and does not alter any of the current columns or rows (unless you name the column the same thing as an already existing column)  
+* `arrange()` : puts a numeric variable in order in assending order.   
+* `select()` : column removal for an existing dataset or including columns to a new dataset based off of an already existing dataset.  
+* `slice()` : removal or rows by number/value or subset of numbers/values.  
+* `filter()` : uses a conditional statement, or statements, to remove a certain variable from the dataset by row.  
+* `group_by()` : often used with summarise() to get sample statistics by subcategories within a particular categorical variables levels.   
+* `summmarise()` : sample statistics from data.  
+
+
+**Exercise 2:** Review mutate(). Create a new variable in hpi_df that is equal to Wellbeing / Footprint.  
+
+```{r}
+hpi_df |> mutate("welbeing/footprint" = (Wellbeing / Footprint))
+```
+
+
+**Exercise 3:** Review mutate() and case_when(). Create a new variable in hpi_df that is equal to "80s" if LifeExp is in the 80’s, "70s" if LifeExp is in the 70s, and "Below 70" if LifeExp is less than 70.  
+
+```{r}
+hpi_df |> mutate(LifeExpCat = case_when(
+  LifeExpectancy >= 80 & LifeExpectancy < 90 ~ "80s",
+  LifeExpectancy >= 70 & LifeExpectancy < 80 ~ "70s",
+  LifeExpectancy < 70 ~ "Below 70"
+))
+```
+
+
+**Exercise 4:** Review arrange(). Sort the hpi_df data so that the country with the highest LifeExp is in the first row and the country with the lowest LifeExp is in the last row.  
+
+```{r}
+hpi_df |> arrange(desc(LifeExpectancy))
+```
+
+
+**Exercise 5:** Review select(). Make a data frame from hpi_df that only has the variables Country and LifeExp.  
+
+```{r}
+hpi_df |> select(Country, LifeExpectancy)
+```
+
+
+
+**Exercise 6:** Review slice(). Make a data frame from hpi_df that only has the first 5 rows.  
+
+```{r}
+hpi_df |> slice(1:5)
+```
+
+
+**Exercise 7:** Review filter(). Make a data frame from hpi_df that only has countries in the "Western World" Region.
+
+```{r}
+hpi_df |> filter(Region != "Western World")
+```
+
+
+**Exercise 8:** Review filter(). Make a data frame from hpi_df that only has countries with a LifeExp less than 55.
+
+```{r}
+hpi_df |> filter(LifeExpectancy < 55)
+```
+
+
+**Exercise 9:** Review group_by() and summarise(). Make a table of the number of countries in each Region. (Hint: recall that the n() function is the counting function in dplyr).  
+
+```{r}
+hpi_df |> group_by(Region) |> summarise(n = n())
+```
+
+
+**Exercise 10** Review group_by() and summarise(). Make a table with the maximum LifeExp in each Region.  
+
+```{r}
+hpi_df |> group_by(Region) |> summarise(max = max(LifeExpectancy))
+```
+
+_-------------------------------------------------------------------------------_  
+
+## 5.2: More Review with Billboard Hot 100  
+
+
+
+
+
+
+_-------------------------------------------------------------------------------_  
+
+## 5.3: Your Turn  
+
+
+
+
+Exercise 2. You may have used a SLU majors data set in DATA/STAT 234, but now, we will use a data set that is a little different in that it shows the major/minor combination of each student. That is, instead of each row being a major, each row is an individual student. This allows us to look at more detailed questions about what students tend to double-major or minor in. The data was obtained from Christine Zimmerman in SLU’s Institutional Research Office and contains data on all graduating students in the past 7 years.
+
+The variables in the data set are:
+Using this data set, construct a visualization that explores gender balance within each of the majors at SLU. We will begin this exercise by sketching out what we want to create as a class.
+
+
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(here)
+df <- read_excel("Section Notes/data/slu_graduates_17_23.xlsx")
+df <- df |> mutate(across(everything(),
+                          .fns = ~replace(., . ==  "STATS" , "STAT")))
+
+majors_plot = df |> select(-minor1, -minor2, -minor3) |>
+  pivot_longer(c(4:6), names_to = "Major_num", values_to = "Major") |> 
+  filter(!is.na(Major)) |>
+  # mutate(Sex = if_else(sex == "M", 1, 0)) |>
+  group_by(Major, sex) |> summarise(n_majors = n()) |>
+  ungroup() |> 
+  pivot_wider(names_from = sex, values_from = n_majors) |>
+  mutate(prop_m = M/ (`F` + M),
+            prop_f = `F`/(M+`F`),
+         sum = (M+`F`)) |>
+  filter(sum > 70) |>
+  mutate(Major = fct_reorder(Major, prop_m))
+
+subset = majors_plot |> filter(Major == "MATH" | Major == "STAT" | Major == "CS")
+
+# cut off is 70 students 
+majors_plot |> ggplot(aes(x = Major, y = prop_m)) +
+  geom_segment(aes(xend = Major, y = 0, yend = prop_m)) +
+  geom_point() +
+  geom_segment(data = subset, aes(xend = Major, y = 0, yend = prop_m), color = "hotpink1") +
+  geom_point(data = subset, color = "hotpink1") +
+  labs(caption = "Data Source: SLU Institutional Research Office") +
+  coord_flip() +
+  theme(
+    axis.text.x = element_text(size = 14, color = "black"),
+    axis.title.y = element_blank()
+  )
+```
+
+
+
+
+

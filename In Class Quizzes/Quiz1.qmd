@@ -40,7 +40,8 @@ diamonds |> ggplot(aes(x = price)) +
 
 # 3.  
 
-
+Link:  
+https://github.com/bryanathieret/STAT---334
 
 
 

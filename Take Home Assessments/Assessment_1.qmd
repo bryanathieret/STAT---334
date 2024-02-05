@@ -1,0 +1,62 @@
+---
+title: "Take Home Assessment 1"
+format:
+  html:
+    embed-resources: true
+    echo: false
+    warning: false
+    message: false
+documentclass: article
+author: "Bryana A. S. Thieret"
+mainfont: "Cambria"
+monofont: "Cambria"
+---
+
+
+“All work presented is my own, and I have followed all rules for collaboration. If I used any AI on this assignment, I have clearly stated both (1) what my search prompt was and (2) what I used from the AI answer."  
+**Bryana A.S. Thieret**  
+
+## 1.  
+
+* Group 5 is the easiest to see the trend over time because all of the values for Group 5 are starting at the same place (i.e., 0) on the y-axis which makes it easier to view a pattern across time compared to the other group categories that do not start at the same initial value over years.  
+
+## 2.  
+a. We should use a diverging scale with a neutral midpoint because positive and negative numbers are related (i.e., on the same scale) but opposite to one another.  
+
+b. We should use a sequential scale because we have a continuous variable (i.e., cases) that is going to be 0 or greater.  
+
+## 3.  
+a. I would display the data through a histogram because the data is only a quantitative variable.  
+b. A histogram would tell me the center, spread, shape, and approximately the sample size.  
+
+## 4.  
+
+Pair 1:  
+
+* The geom_functions are different where the first graph uses points to display the data (i.e., geom_point()), the second graph uses boxplots to show the data (i.e., geom_boxplot()).  
+
+
+Pair 2:  
+
+* The coordinate_functions are different where the first graph has positions on the x-axis, the second graph has the positions on the y-axis (i.e., coord_flip()).  
+
+
+Pair 3:  
+
+* The positions are different where the first graph has the points in a complete line vertically, the second graph has the points jittered (i.e., geom_jitter()) along with the position of the boxplots (i.e., I think position = position_dodge(0.9)).  
+
+
+## 5.  
+
+a. Plot 1 is better because the x-axis starts at 0 while in Plot 2 the x-axis starts at 40 which can be deceiving especially to a general population.    
+
+b. Plot 1 is a better plot because Plot 2 shows the positions through colors but there are too many positions to be able to clearly differentiate between the different player's positions compared to Plot 1 where you can clearly see the pattern/distribution of homeruns by the player's position. I think color in this case is not necessary and makes it difficult to articulate differences between the actual data being displayed.  
+
+
+
+
+
+
+
+
+
