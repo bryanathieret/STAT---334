@@ -1,0 +1,220 @@
+---
+title: "8: STAT 213 Review"
+format:
+  html:
+    embed-resources: true
+    warning: false
+    message: false
+documentclass: article
+author: "Bryana A. S. Thieret"
+mainfont: "Cambria"
+monofont: "Cambria"
+---
+
+## 8.1: STAT 213 with `broom`  
+
+* In the examples below, we will consider the multiple regression model  
+
+$$Y = \beta_0 + \beta_1species + \beta_2aroma + \beta_3 flavor + \beta_4sweetness + \beta_5moisture + \epsilon$$  
+
+* where $Y$ is the rating of the coffee (total_cup_points), species in an indicator variable equal to 1 if the species is Robusta and a 0 if the species is Arabica.  
+
+### 8.1.1: `tidy()`  
+
+* `tidy()` is analogous to `summary()` for a linear model.  
+
+```{r}
+library(tidyverse)
+library(broom)
+library(here)
+theme_set(theme_classic())
+
+coffee_df <- read_csv(here("Section Notes/data/coffee_ratings.csv"))
+
+
+coffee_mod <- lm(total_cup_points ~ species + aroma + flavor +
+                   sweetness + moisture,
+   data = coffee_df)
+```
+
+```{r}
+summary(coffee_mod)
+
+tidy(coffee_mod)
+```
+
+* The advantage of this format of output is that we can now use other `tidyverse` functions on the output.  
+
+```{r}
+# to pull p-values 
+tidy(coffee_mod) |> select(p.value)
+
+# grab the output for a particular variable of interest
+tidy(coffee_mod) |> filter(term == "aroma")
+```
+
+
+### 8.1.2: `glance()`  
+
+* `glance()` puts some model summary statistics into a tidy tibble. 
+
+```{r}
+glance(coffee_mod)
+```
+
+
+### 8.1.3: `augment()`  
+
+* `augment()` returns a tibble that contains all of the variables used to fit the model appended with commonly used diagnostic statistics like the fitted values, cooks distance, values for leverage, and residuals.  
+
+```{r}
+augment(coffee_mod)
+
+# filter() the data set to examine values with high cook's distance that might be influential
+
+augment_df = augment(coffee_mod)
+augment_df |> filter(.cooksd > 1)
+
+augment_df |> filter(.fitted > 25) |> 
+  ggplot(aes(x = .fitted, y = .resid)) + 
+  geom_point()
+```
+
+### 8.1.4: Exercises  
+
+**Exercise 1:** Examine the penguins data set in the palmerpenguins package. Fit a linear regression model with body_mass_g as the response variable and species and bill_length_mm as the predictors. Note that penguins with missing values for any of these three variables will be dropped from the analysis.  
+
+```{r}
+library(palmerpenguins)
+penguins
+
+pen_mod1 = lm(body_mass_g ~ bill_length_mm, data = penguins)
+```
+
+
+
+**Exercise 2:** Create a table of summary output, including coefficient estimates, standard errors, test statistics, and p-values, using one of the broom functions.
+
+```{r}
+tidy(pen_mod1)
+```
+
+
+**Exercise 3:** Use glance() to glance at some of the relevant model statistics.  
+
+```{r}
+glance(pen_mod1)
+```
+
+
+**Exercise 4:** Using augment(), create a plot of the residuals vs. the fitted values and evaluate the constant variance assumption.  
+
+```{r}
+augment(pen_mod1) |> ggplot(aes(x = .fitted, y = .resid)) + 
+  geom_point() +
+  geom_hline(yintercept = 0.5, color = "red")
+```
+
+
+**Exercise 5:** Using augment(), check to see if there are any penguins that are influential. Use 0.75 as your cut-off value for Cook’s distance.
+
+
+```{r}
+augment(pen_mod1) |> filter(.cooksd > .75)
+```
+* There are no penguins that are particularly influential in this data set.  
+
+_-----------------------------------------------------------------------------------------_  
+
+## 8.2: Model Coefficient Interpretation  
+
+```{r}
+library(here)
+library(tidyverse)
+library(broom)
+
+statsurvey_df <- read_csv(here("Section Notes/data/stat113_survey.csv"))
+
+statsurvey_nomiss <- statsurvey_df |> filter(!is.na(GPA))
+statsurvey_nomiss <- statsurvey_nomiss |>
+  mutate(time_year = as.numeric(time_year)) |>
+  mutate(a_year = if_else(time_semester == "S",
+                          true = time_year - 1,
+                          false = time_year)) |>
+  filter(GPA <= 4.0) |>
+  mutate(a_year_fact = as.factor(a_year),
+         a_year = a_year + 2000)
+```
+
+
+```{r}
+year_linear = lm(GPA ~ a_year, data = statsurvey_nomiss)
+tidy(year_linear)
+```
+
+```{r}
+yearlm = lm(GPA ~ a_year_fact, data = statsurvey_nomiss)
+tidy(yearlm)
+```
+
+```{r}
+glance(year_linear)
+glance(yearlm)
+anova(year_linear, yearlm)
+```
+
+
+```{r}
+# creates "grid"
+grid = tibble::tibble(a_year = 2005:2021)
+auglinear = augment(year_linear, newdata = grid, interval = "confidence")
+
+auglinear |> ggplot(aes(y = .fitted, x = a_year)) + 
+  geom_jitter(data = statsurvey_nomiss, aes(x = a_year, y = GPA), alpha = 0.2, shape = 21) +
+  geom_point(color = "purple") +
+  geom_errorbar(aes(ymin = .lower, ymax = .upper), width = 0.25, color = "purple") +
+  labs(caption = "Error bars are 95% CI for the mean response of the fitted value.") +
+  theme_classic() 
+```
+
+Check Assumptions
+
+* qqnorm 
+* residual vs. fitted 
+* 
+```{r}
+yearlm
+year_aug <- yearlm |> augment()
+
+# linearity 
+## scatter plot of residual vs fitted 
+year_aug |> ggplot(aes(y = .resid, x = .fitted)) + geom_point()
+
+# normality 
+## histogram of residuals
+year_aug |> ggplot(aes(x = .resid)) + geom_histogram(fill = "slateblue", color = "blue")
+
+
+# equal variance 
+year_aug |> ggplot(aes(x = .fitted, y = .resid)) + 
+  geom_jitter(width = 2.5, alpha = 0.6)
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

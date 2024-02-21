@@ -84,6 +84,44 @@ _-------------------------------------------------------------------------------
 
 ## 7.2: STAT 113 Survey  
 
+```{r}
+library(here)
+library(readr)
+statsurvey_df <- read_csv(here("Section Notes/data/stat113_survey.csv"))
+```
+
+
+```{r}
+statsurvey_df = statsurvey_df |> 
+  mutate(time_year = as.numeric(time_year)) |>
+  mutate(year = if_else(time_semester == "S", time_year - 1, time_year)) |>
+  mutate(year = year + 2000)
+
+statsurvey_df |> ggplot(aes(x = GPA)) + geom_histogram()
+
+
+statsurvey_df = statsurvey_df |> 
+  filter(GPA <= 4) |>
+  filter(!is.na(GPA))
+
+
+
+summary_stats = statsurvey_df |> group_by(year) |> summarise(mean = mean(GPA),
+                                             sd = sd(GPA),
+                                             n = n()) |>
+  mutate(se = sd/sqrt(n),
+         u_se = mean+se,
+         l_se = mean-se)
+  
+
+statsurvey_df |> ggplot(aes(x = year)) +
+  geom_errorbar(data = summary_stats, aes(ymin = l_se, ymax = u_se), color = "brown4") +
+  geom_point(data = summary_stats, aes(y = mean), color = "red3", size = 3) +
+  theme_classic() +
+  labs(y = "Mean GPA", x = "Academic Year")
+  
+
+```
 
 
 
@@ -93,6 +131,27 @@ _-------------------------------------------------------------------------------
 ## 7.3: Your Turn  
 
 
+**Exercise 1:** Is there evidence from the STAT 112 survey that tattoos have become more or less common?  
+
+
+```{r}
+tattoo_prop = statsurvey_df |> filter(!is.na(Tattoo)) |> 
+  mutate(tattoo = if_else(Tattoo == "Yes", 1, 0)) |>
+  group_by(year) |> 
+  summarise(n = n(),
+            sum = sum(tattoo),
+            taprop = sum/n) 
+tattoo_prop = tattoo_prop |> mutate(se = sqrt(taprop*(1-taprop)/n),
+         u_se = taprop + se,
+         l_se = taprop - se)
+
+tattoo_prop |> ggplot(aes(x = year, taprop)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = l_se, ymax = u_se)) +
+  labs(x = "Academic Year", y = "P(Tattoo)") +
+  theme_classic() 
+
+```
 
 
 

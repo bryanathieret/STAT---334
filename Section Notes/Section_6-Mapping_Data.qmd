@@ -106,11 +106,148 @@ _-------------------------------------------------------------------------------
 
 ## 6.2: Mapping Other Areas: `sf` Objects   
 
+```{r}
+active <- read_csv("https://raw.githubusercontent.com/iramler/stlawu_covid/main/slc_towns_active_cases.csv", n_max = 34)
+tcases <- read_csv("https://raw.githubusercontent.com/iramler/stlawu_covid/main/slc_towns_total_cases.csv", n_max = 34)
+
+active_long <- active |> pivot_longer(5:ncol(active), names_to = "date",
+                                       values_to = "cases")
+## repeat for total cases
+tcases_long <- tcases |> pivot_longer(5:ncol(tcases), names_to = "date",
+                                       values_to = "cases")
+
+library(lubridate)
+covid_df <- left_join(tcases_long, active_long,
+                      by = c("date", "Order", "NAME")) |>
+  mutate(date = mdy(date)) |>
+  rename(total_cases = cases.x,
+         active_cases = cases.y) |>
+  mutate(total_cases = if_else(is.na(total_cases),
+                               true = 0, false = total_cases),
+         active_cases = if_else(is.na(active_cases),
+                                      true = 0, false = active_cases))
+  
+
+covid_SLC <- covid_df |> filter(NAME == "St. Lawrence County")
+covid_sub <- covid_df |> filter(NAME != "St. Lawrence County")
+```
+
+
+Exercise 1. Make a line plot that shows the number of active_cases in all of St. Lawrence County over time.
+
+```{r}
+covid_SLC |> ggplot(aes(y = active_cases, x = date)) + geom_line()
+```
+
+But suppose that we now want to make a map of the current day’s active cases in the subregions of SLC. We need to tell R how to draw the lines that define the different subregions of SLC. To do so, we need to provide R with a shapefile that has directions on how to draw the spatial polygons.
+
+
+```{r}
+## install.packages("sf")
+library(sf)
+library(here)
+shp <- read_sf("Section Notes/data/slc.shp") |>
+  st_transform(st_crs("+proj=longlat"))
+```
+
+
+```{r}
+ggplot(data = shp) +
+  geom_sf() +
+  theme_void()
+
+full_df <- left_join(shp, covid_sub, by = "NAME") |>
+  filter(date == max(date)) ## only plot cases on the most recent date
+
+ggplot(data = full_df) +
+  geom_sf(aes(fill = active_cases)) +
+  theme_void()
+```
+
+
+**Exercise 2:** Change the fill scale of the plot. Should you use an unordered, sequential, or diverging scale?  
+
+```{r}
+ggplot(data = full_df) +
+  geom_sf(aes(fill = active_cases)) +
+  theme_void() +
+  scale_fill_distiller(palette = 3)
+```
+
+* When you bin you lose some of the information, but it results in a simpler plot.  
+
+**Exercise 3:** Change the colour scale so that active_cases are put into different bins with scale_fill_viridis_b(). What are some advantages and disadvantages of this?
+
+```{r}
+ggplot(data = full_df) +
+  geom_sf(aes(fill = active_cases)) +
+  theme_void() +
+  scale_fill_viridis_b()
+```
+
+
+
+**Exercise 4:** Explore the ?geom_sf_text() function and add the actual number of cases to the subregions in the plot, as was done on the SLC website.
 
 
 _-------------------------------------------------------------------------------------_
 
 ## 6.3: Your Turn  
+
+```{r}
+library(tidyverse)
+library(here)
+hpi_df <- read_csv(here("Section Notes/data/hpi-tidy.csv"))
+```
+
+
+**Exercise 1:** Make a map of a variable of your choosing. In coord_map(), use projection = "mercator", which is also the default (we will see in a later exercise that this probably is not the best choice).
+
+Hint: in ggplot2’s map_data() function, there is a built in map of the "world".
+
+Hint: You can read more about projections in Section 17.3.2 of Modern Data Science with R
+
+```{r}
+world_df = map_data("world")
+world_df = left_join(world_df, hpi_df, by = c("region" = "Country"))
+
+world_df |> ggplot(aes(x = long, y = lat, group = group, fill = Wellbeing)) +
+  geom_polygon() + 
+  coord_map(projection = "mercator") +
+  scale_fill_distiller(palette = 3)
+
+```
+
+
+
+Exercise 2. You may notice that the United States does not get coloured in your map. Examine this issue further and fix the map so that the United States is coloured.  
+* It is coded as different names so when they were merged the name disappeared.  
+
+```{r}
+hpi_df = hpi_df |> mutate(Coutnry = fct_recode(Country, "USA" = "United States of America"))
+world_df = left_join(world_df, hpi_df, by = c("region" = "Country"))
+
+world_df |> ggplot(aes(x = long, y = lat, group = group, fill = Wellbeing)) +
+  geom_polygon() + 
+  coord_map(projection = "mercator", xlim = c(-180, 180)) +
+  scale_fill_distiller(palette = 3)
+```
+
+
+Exercise 3. You may have noticed that there are two horizontal stripes across your map. This is an issue that drove me nuts! Check out this submitted issue on ggplot2’s GitHub page for the reason for the error as well as a fix. Use it to fix your plot.
+
+```{r}
+world_df |> ggplot(aes(x = long, y = lat, group = group, fill = Wellbeing)) +
+  geom_polygon() + 
+  coord_map(projection = "mercator", xlim = c(-180, 180)) +
+  scale_fill_distiller(palette = 3)
+```
+
+
+Exercise 4. Read about Mercator projections in this blog post. What does this source say about the sizes of Greenland vs. Africa in a Mercator projection?
+
+
+Exercise 5. Examine all of the different options for map projection with ?mapproject. Then, change the projection to "globular". Change the projection again to "gilbert". How does the relative size of Greenland to Africa change in the projections?
 
 
 

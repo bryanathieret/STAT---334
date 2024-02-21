@@ -1,0 +1,107 @@
+---
+title: "Take-Home Quiz 2"
+format:
+  html:
+    embed-resources: true
+    warning: false
+    message: false
+documentclass: article
+author: "Bryana A. S. Thieret"
+mainfont: "Cambria"
+monofont: "Cambria"
+---
+
+“All work presented is my own, and I have followed all rules for collaboration. If I used any AI on this assignment, I have clearly stated both (1) what my search prompt was and (2) what I used from the AI answer.”  
+**Bryana A.S. Thieret**  
+
+The following reads in the data set from the Excel file, and fixes an error in the data where some Statistics majors/minors are labeled STAT while others are labeled STATS.
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(readxl)
+library(here)
+df <- read_excel(here::here("Section Notes/data/slu_graduates_17_23.xlsx"))
+## fixes error in the data
+df <- df |> mutate(across(everything(),
+                          .fns = ~replace(., . ==  "STATS" , "STAT")))
+
+```
+
+
+Question 1 (4 points). Make a plot that shows the “other” majors of each STAT major student in the data set, along with the count of each major. This plot should show the most popular majors that statistics majors tend to double or triple major in. Hint: You will need dplyr and forcats: you may want to examine old DATA/STAT 234 materials for a refresher.
+
+```{r}
+q1 = df |> select(-minor1, -minor2, -minor3) |>
+  filter(major1 == "STAT") |>
+  select(-major1) |>
+  pivot_longer(c(4:5), values_to = "Major", names_to = "Major_Order") |>
+  filter(!is.na(Major)) |>
+  group_by(Major) |>
+  summarise(n = n()) |>
+  mutate(Major = fct_reorder(Major, n))
+
+q1 |> ggplot(aes(x = Major, y = n)) + 
+  geom_col() +
+  coord_flip()
+```
+
+
+
+Question 2 (3 points). In class, we used a majors data set to create a plot of the proportion of female students within each major at SLU. Modify this plot so that there are error bars instead of bars or lollipops so that variability in the estimates of our proportions is shown.
+
+```{r}
+q2 = df |> 
+  select(-minor1, -minor2, -minor3) |>
+  pivot_longer(c(4:6), names_to = "Major_num", values_to = "Major") |> 
+  filter(!is.na(Major)) |>
+  # mutate(Sex = if_else(sex == "M", 1, 0)) |>
+  group_by(Major, sex) |> summarise(n_majors = n()) |>
+  ungroup() |> 
+  pivot_wider(names_from = sex, values_from = n_majors) |>
+  mutate(n = n(),
+    prop_m = M/ (`F` + M),
+            prop_f = `F`/(M +`F`),
+         sum = (M+`F`)) |>
+  filter(sum > 70) |>
+  mutate(Major = fct_reorder(Major, prop_m)) |> 
+  mutate(se = sqrt(prop_f*(1-prop_f)/n),
+         u_se = prop_f + se,
+         l_se = prop_f - se)
+  
+
+q2 |> ggplot(aes(x = Major, y = prop_f)) +
+  geom_point(size = 3) +
+  geom_errorbar(aes(ymin = l_se, ymax = u_se)) +
+  labs(x = "Major", y = "P(Female)") +
+  coord_flip() +
+  theme_classic() 
+
+```
+
+
+
+Question 3 (3 points). Examine the alcohol.csv data set that you may have used as an introductory data set in DATA/STAT 234:
+
+
+```{r}
+library(tidyverse)
+library(here)
+alcohol_df <- read_csv(here("Section Notes/data/alcohol.csv"))
+library(maps)
+
+world_df = map_data("world")
+alcohol_map = left_join(world_df, alcohol_df, by = c("region" = "country"))
+
+alcohol_map |> ggplot(aes(x = long, y = lat, group = group, fill = beer_servings)) +
+  geom_polygon(color = "grey5", linewidth = 0.2) + 
+  coord_map("rectangular", lat0=0, ylim=c(-60, 80), xlim = c(-180, 180)) +
+  scale_fill_viridis_c(option = "magma", direction = -1) +
+  theme(legend.position = "top")
+
+```
+
+
+
+
+

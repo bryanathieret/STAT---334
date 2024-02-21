@@ -1,0 +1,191 @@
+---
+title: "Section 9: Linear Model Visualization"
+format:
+  html:
+    embed-resources: true
+    warning: false
+    message: false
+documentclass: article
+author: "Bryana A. S. Thieret"
+mainfont: "Cambria"
+monofont: "Cambria"
+---
+
+
+```{r}
+library(openintro)
+library(tidyverse)
+theme_set(theme_classic())
+evals = openintro::evals
+```
+
+
+## 9.1: Basic Strategy  
+
+* Our basic strategy for visulaizing models is to,  
+1. Fit the model of interest with lm().  
+2. Construct a grid of predictors with the data_grid() function from the modelr package.  
+3. Use the augment() function from the broom package on the data grid in (2) to predict the response variable according to the model for each row in the grid.  
+4. Use ggplot2 to construct a meaningful plot with the model predictions from (3).  
+
+
+```{r}
+ggplot(data = evals, aes(x = age, y = score)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+* Our first goal is to recreate the plot above "by hand" so that we can see what the different functions are doing in a relatively simple example.  
+
+**Step 1:** Fit the model.  
+
+```{r}
+library(broom)
+mod_age <- lm(score ~ age, data = evals)
+mod_age |> tidy()
+```
+
+**Step 2:** Create a grid of predictor values.  
+
+```{r}
+library(modelr)
+grid <- evals |>
+  data_grid(
+    age = seq_range(age, n = 6)
+  ) 
+grid
+```
+
+**Step 3:** `augment()`.  
+
+* `augment()` takes the name of the model and the name of the gridded data frame we created in the previous step. We can also obtain 95% CI for the mean response at each value of `age` in `grid`.  
+
+```{r}
+aug_age <- augment(mod_age, newdata = grid,
+                   interval = "confidence")
+aug_age
+```
+
+**Step 4:** Use `ggplot2`.  
+
+```{r}
+ggplot(data = evals, aes(x = age, y = score)) +
+  geom_point() +
+  geom_line(data = aug_age, aes(x = age, y = .fitted),
+            colour = "blue", linewidth = 1.2)
+```
+
+```{r}
+ggplot(data = evals, aes(x = age, y = score)) +
+  geom_point() +
+  geom_line(data = aug_age, aes(x = age, y = .fitted),
+            colour = "blue", linewidth = 1.2) +
+  geom_ribbon(data = aug_age, aes(y = .fitted,
+                                  ymin = .lower,
+                                  ymax = .upper), 
+              alpha = 0.4)
+```
+
+
+
+**Exercise 1:** As we saw above, the grey “band” around the fitted regression line represents 95% confidence intervals for the mean response (score) for particular values of the predictor (age). In STAT 213, you also discussed 95% prediction intervals for a new observation’s response (score) for particular values of the predictor (age). What is the difference between a 95% confidence interval and a 95% prediction interval?  
+
+* A predictive interval predicts an indivdual number compared to a confidence interval which predicts the mean value.  
+
+**Exercise 2:** Modify the code so that the grey band reflects 95% prediction intervals instead of 95% confidence intervals for the mean.  
+
+
+```{r}
+aug_age2 <- augment(mod_age, newdata = grid,
+                   interval = "prediction")
+
+ggplot(data = evals, aes(x = age, y = score)) +
+  geom_point() +
+  geom_line(data = aug_age2, aes(x = age, y = .fitted),
+            colour = "blue", linewidth = 1.2) +
+  geom_ribbon(data = aug_age2, aes(y = .fitted,
+                                  ymin = .lower,
+                                  ymax = .upper), 
+              alpha = 0.4)
+```
+
+
+**Exercise 3:** By “hand”, verify that the .fitted value in the first row of aug_age can be calculated simply by plugging in 29 into the fitted regression equation obtained from mod_age.
+
+```{r}
+(4.461932 - 0.005938*29)
+```
+
+
+**Exercise 4:** In data_grid(age = seq_range(age, n = 6)), why does it not matter as much what value is chosen for n in this example? Change n to be a different integer and verify that the plot does not substantially change.  
+
+* because age is ordered from least to greatest and the difference between these values is releatively consistent throughout the dataset.  
+
+```{r}
+grid2 = evals |>
+  data_grid(
+    age = seq_range(age, n = 27)
+  ) 
+aug_age3 <- augment(mod_age, newdata = grid2,
+                   interval = "confidence")
+
+ggplot(data = evals, aes(x = age, y = score)) +
+  geom_point() +
+  geom_line(data = aug_age3, aes(x = age, y = .fitted),
+            colour = "blue", linewidth = 1.2) +
+  geom_ribbon(data = aug_age3, aes(y = .fitted,
+                                  ymin = .lower,
+                                  ymax = .upper), 
+              alpha = 0.4)
+```
+
+
+
+
+**Exercise 5:** Fit the following model, which includes an age^2 term. Then, run the rest of the code in the chunk to obtain predictions for the age values in grid with both the mod_age model and the mod_agesq model.  
+
+Use ggplot to make a plot that has (1) the fitted line from mod_age and the fitted curve from mod_agesq, where the line/curves are coloured by the model type and (2) has the data points in the background of the plot. The code below stacks the two augmented data frames on top of each other and creates a new column called model that gives the names of the data frames as its levels.
+
+```{r}
+aug_age <- augment(mod_age, newdata = grid,
+                   interval = "confidence")
+
+mod_agesq <- lm(score ~ age + I(age ^ 2), data = evals) 
+
+grid <- evals |>
+  data_grid(
+    age = seq_range(age, n = 6)
+  ) 
+
+aug_agesq <- augment(mod_agesq, newdata = grid,
+                     interval = "confidence")
+
+plot_df <- bind_rows(lst(aug_age, aug_agesq), .id = "model")
+plot_df
+
+
+
+
+ggplot(data = evals, aes(x = age, y = score)) +
+  geom_point() +
+  geom_line(data = plot_df, aes(x = age, y = .fitted, col = model),
+             linewidth = 0.5, position = position_dodge(0.9)) +
+  
+
+  geom_ribbon(data = plot_df, aes(y = .fitted,
+                                  ymin = .lower,
+                                  ymax = .upper, col = model), 
+              alpha = 0.4)
+
+```
+
+
+_----------------------------------------------------------------------------------_  
+
+
+## 9.2: Visualizing More Complex Models  
+
+
+
+
+

@@ -1,0 +1,88 @@
+---
+title: "Coding Assessment 2"
+author: "Bryana A.S. Thieret"
+format: 
+  html:
+    embed-resources: true
+---
+
+
+# 1.  
+
+```{r}
+library(maps)
+library(tidyverse)
+library(here)
+election_df <- read_csv(here("data/2020_county_pres.csv")) |>
+  group_by(state_name) |>
+  summarise(total_gop = sum(votes_gop),
+            total_dem = sum(votes_dem)) |>
+  mutate(percent_gop = 100 * total_gop / (total_gop + total_dem)) |>
+  mutate(state_name = str_to_lower(state_name))
+```
+
+
+```{r}
+state_df <- ggplot2::map_data("state")
+state_full <- left_join(state_df, election_df, by = c("region" = "state_name"))
+
+ggplot(data = state_full, aes(x = long, y = lat, group = group)) +
+  geom_polygon(colour = "black", aes(fill = percent_gop)) +
+  coord_map(projection = "albers", lat0 = 39, lat1 = 45) +
+  theme_void() +
+  scale_fill_distiller(palette = 3, direction = 1)
+```
+
+
+
+# 2.  
+
+a. 
+```{r}
+library(here)
+statsurvey_df <- read_csv(here("data/stat113_survey.csv"))
+statsurvey_df$time_year = as.numeric(statsurvey_df$time_year)
+
+q2a = statsurvey_df |> filter(time_year > 12) |>
+  mutate(Facebook = if_else(is.na(Facebook), 0, Facebook))|>
+  mutate(year = if_else(time_semester == "S", time_year - 1, time_year)) |>
+  mutate(year = year + 2000) 
+
+q2a |> ggplot(aes(x = year, y = Facebook, group = year)) + geom_boxplot() + coord_flip()
+
+```
+
+
+b.  
+
+```{r}
+faceprop = q2a |>
+  mutate(yes = if_else(Facebook > 0, 1, 0)) |>
+group_by(year) |>
+  summarise(n = n(),
+            sum = sum(yes),
+            Facebook_prop = sum/n)  |> 
+  mutate(se = sqrt(Facebook_prop*(1-Facebook_prop)/n),
+         u_se = Facebook_prop + se,
+         l_se = Facebook_prop - se)
+
+faceprop |> ggplot(aes(x = year, Facebook_prop)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = l_se, ymax = u_se)) +
+  labs(x = "Academic Year", y = "P(Tattoo)") +
+  theme_classic() 
+```
+
+
+c.  
+
+```{r}
+statsurvey_partc <- statsurvey_df |> filter(GPA <= 4.0 & !is.na(Tattoo))
+ggplot(data = statsurvey_partc, aes(x = Tattoo, y = GPA)) +
+  geom_violin(color = "hotpink2", fill = "pink") +
+  theme_minimal() + 
+  labs(y = "GPA (0.0 - 4.0)", x = "Report Tattoo", title = "GPA vs. Tattoo at SLU", caption = "This data was collected from STAT 113 students between the years of 2013 to 2021.") +
+  ylim(0, 4) 
+  
+```
+
